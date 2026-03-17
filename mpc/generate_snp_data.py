@@ -19,18 +19,19 @@ def generate_snp_vector(m, p_mut, base=None, corr=None):
         vec.append(bit)
     return vec
 
+# main method
 def main():
     random.seed(42)
 
     # Parameters
-    m = 10000          # number of SNP positions
+    m = 1000         # number of SNP positions
     p_mut = 0.01       # mutation probability
     corr = 0.5         # correlation between labs (0 = independent, 1 = identical)
 
-    # Generate Lab A vector
+    # Lab A vector
     labA = generate_snp_vector(m, p_mut)
 
-    # Generate Lab B vector, partially correlated with Lab A
+    # Lab B vector with partial correlated with Lab A (will be changed when there is real data)
     labB = generate_snp_vector(m, p_mut, base=labA, corr=corr)
 
     # Save to JSON files
