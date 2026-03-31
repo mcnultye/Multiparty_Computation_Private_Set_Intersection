@@ -91,6 +91,33 @@ if uploaded_file is not None:
         # Collect outputs
         out0, err0 = p0.communicate()
         out1, err1 = p1.communicate()
+        
+        # Load metadata
+        with open("snp_metadata.json") as f:
+            metadata = json.load(f)
+
+        # Load SNP universe
+        with open("snp_universe.json") as f:
+            universe = json.load(f)
+
+        # Determine which SNPs matched (Lab A vector AND Lab B vector)
+        matched_snps = []
+        for i, rsid in enumerate(universe):
+            if vector[i] == 1:  # user has this SNP
+                matched_snps.append({
+                    "rsID": rsid,
+                    "gene": metadata[rsid]["gene"],
+                    "condition": metadata[rsid]["condition"],
+                    "description": metadata[rsid]["description"]
+                })
+
+        # Display results
+        st.subheader("Matched Genetic Variants")
+        if matched_snps:
+            st.table(matched_snps)
+        else:
+            st.write("No matching variants found.")
+
 
         st.write("### Step 3 — Results")
 
@@ -98,8 +125,3 @@ if uploaded_file is not None:
         st.code(out0)
         if err0:
             st.code(err0)
-
-        st.subheader("Party 1 Output")
-        st.code(out1)
-        if err1:
-            st.code(err1)

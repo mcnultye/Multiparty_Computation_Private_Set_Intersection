@@ -1,0 +1,102 @@
+{
+  "rs121908755": {
+    "gene": "BRCA1",
+    "condition": "Hereditary breast and ovarian cancer",
+    "description": "A pathogenic BRCA1 variant associated with increased cancer risk."
+  },
+  "rs80357065": {
+    "gene": "CFTR",
+    "condition": "Cystic Fibrosis (carrier status)",
+    "description": "A rare CFTR mutation associated with cystic fibrosis."
+  },
+  "rs63750847": {
+    "gene": "LDLR",
+    "condition": "Familial Hypercholesterolemia",
+    "description": "A rare LDLR mutation associated with high LDL cholesterol."
+  },
+  "rs9282541": {
+    "gene": "ABCA1",
+    "condition": "Lipid metabolism variant",
+    "description": "A rare variant affecting HDL cholesterol levels."
+  },
+  "rs28934578": {
+    "gene": "TP53",
+    "condition": "Li-Fraumeni syndrome",
+    "description": "A pathogenic TP53 variant associated with multiple early-onset cancers."
+  },
+  "rs121912617": {
+    "gene": "PAH",
+    "condition": "Phenylketonuria (PKU)",
+    "description": "A rare PAH mutation associated with PKU."
+  },
+  "rs121909001": {
+    "gene": "FBN1",
+    "condition": "Marfan syndrome",
+    "description": "A rare FBN1 variant associated with connective tissue disorders."
+  },
+  "rs121913529": {
+    "gene": "GBA",
+    "condition": "Gaucher disease (carrier)",
+    "description": "A rare GBA mutation associated with Gaucher disease."
+  },
+  "rs80338939": {
+    "gene": "HEXA",
+    "condition": "Tay-Sachs disease (carrier)",
+    "description": "A rare HEXA mutation associated with Tay-Sachs disease."
+  },
+  "rs121908757": {
+    "gene": "BRCA2",
+    "condition": "Hereditary breast cancer",
+    "description": "A pathogenic BRCA2 variant associated with increased cancer risk."
+  },
+  "rs121909005": {
+    "gene": "COL1A1",
+    "condition": "Osteogenesis imperfecta",
+    "description": "A rare COL1A1 mutation associated with brittle bone disease."
+  },
+  "rs121908744": {
+    "gene": "MLH1",
+    "condition": "Lynch syndrome",
+    "description": "A rare MLH1 variant associated with hereditary colon cancer."
+  },
+  "rs121908751": {
+    "gene": "APC",
+    "condition": "Familial adenomatous polyposis",
+    "description": "A rare APC mutation associated with colon cancer risk."
+  },
+  "rs121912651": {
+    "gene": "HBB",
+    "condition": "Sickle cell trait",
+    "description": "A rare HBB variant associated with sickle cell disease."
+  },
+  "rs80338722": {
+    "gene": "HBA2",
+    "condition": "Alpha-thalassemia",
+    "description": "A rare HBA2 mutation associated with thalassemia."
+  },
+  "rs121909002": {
+    "gene": "FBN1",
+    "condition": "Marfan syndrome",
+    "description": "Another rare FBN1 variant associated with connective tissue disorders."
+  },
+  "rs121908778": {
+    "gene": "RET",
+    "condition": "Multiple endocrine neoplasia",
+    "description": "A rare RET mutation associated with endocrine tumors."
+  },
+  "rs121908787": {
+    "gene": "VHL",
+    "condition": "Von Hippel-Lindau disease",
+    "description": "A rare VHL mutation associated with tumor susceptibility."
+  },
+  "rs121908843": {
+    "gene": "MEN1",
+    "condition": "Multiple endocrine neoplasia type 1",
+    "description": "A rare MEN1 mutation associated with endocrine tumors."
+  },
+  "rs121908862": {
+    "gene": "RB1",
+    "condition": "Retinoblastoma",
+    "description": "A rare RB1 mutation associated with childhood eye cancer."
+  }
+}
