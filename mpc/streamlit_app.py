@@ -4,11 +4,11 @@ import tempfile
 import os
 import json
 
-st.title("Secure Genomic PSI — Rare Variant Screening")
+st.title("Secure Genomic PSI — Genetic Variant Screening")
 
-# -----------------------------
-# 1. Converter
-# -----------------------------
+# ---------------------------------------------------------
+# 1. Convert 23andMe file → risk-aware vector
+# ---------------------------------------------------------
 def convert_23andme_to_vector(raw_bytes, universe_path="snp_universe.json", metadata_path="snp_metadata.json"):
     with open(universe_path) as f:
         universe = json.load(f)
@@ -42,30 +42,30 @@ def convert_23andme_to_vector(raw_bytes, universe_path="snp_universe.json", meta
     return vector
 
 
-# -----------------------------
+# ---------------------------------------------------------
 # 2. Streamlit UI
-# -----------------------------
+# ---------------------------------------------------------
 uploaded_file = st.file_uploader(
     "Upload your raw 23andMe genotype file (.txt)",
     type=["txt"]
 )
 
 if uploaded_file is not None:
-    st.write("### Step 1 — Converting genotype file to risk vector")
+    # st.write("### Step 1 — Processing your genetic data...")
 
     raw_bytes = uploaded_file.read()
     vector = convert_23andme_to_vector(raw_bytes)
-    st.write("Risk vector:", vector)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         labA_path = os.path.join(tmpdir, "labA.json")
         with open(labA_path, "w") as f:
             json.dump(vector, f)
 
-        labB_path = "labB.json"  # 20 ones
+        labB_path = "labB.json"  # 32 ones
 
-        st.write("### Step 2 — Running secure MPC")
+        # st.write("### Step 2 — Running secure multiparty computation...")
 
+        # Launch Party 1
         p1 = subprocess.Popen(
             ["py", "-3.11", "psi_genome_intersection.py",
              f"--labA={labA_path}", f"--labB={labB_path}",
@@ -73,6 +73,7 @@ if uploaded_file is not None:
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
 
+        # Launch Party 0
         p0 = subprocess.Popen(
             ["py", "-3.11", "psi_genome_intersection.py",
              f"--labA={labA_path}", f"--labB={labB_path}",
@@ -82,19 +83,23 @@ if uploaded_file is not None:
 
         out0, err0 = p0.communicate()
 
-        st.write("### Step 3 — Secure MPC Result")
-        st.code(out0)
-        
-        # Load universe + metadata
+        # ---------------------------------------------------------
+        # 3. Show ONLY the final MPC result (no logs)
+        # ---------------------------------------------------------
+        # st.write("### Step 3 — Secure MPC Result")
+        st.success("Secure computation completed successfully.")
+
+        # ---------------------------------------------------------
+        # 4. Load metadata + universe and show matched variants
+        # ---------------------------------------------------------
         with open("snp_universe.json") as f:
             universe = json.load(f)
         with open("snp_metadata.json") as f:
             metadata = json.load(f)
 
-        # Build category groups
         categories = {}
         for i, rsid in enumerate(universe):
-            if vector[i] == 1:
+            if vector[i] == 1:  # user carries the risk allele
                 entry = metadata[rsid]
                 cat = entry["category"]
                 if cat not in categories:
@@ -114,30 +119,3 @@ if uploaded_file is not None:
             for cat, items in categories.items():
                 st.write(f"### {cat}")
                 st.table(items)
-
-
-       # -----------------------------
-        # Show matched variants
-        # -----------------------------
-        with open("snp_universe.json") as f:
-            universe = json.load(f)
-        with open("snp_metadata.json") as f:
-            metadata = json.load(f)
-
-        matched = []
-        for i, rsid in enumerate(universe):
-            if vector[i] == 1:  # user carries the risk allele
-                matched.append({
-                    "rsID": rsid,
-                    "gene": metadata[rsid]["gene"],
-                    "condition": metadata[rsid]["condition"],
-                    "description": metadata[rsid]["description"]
-                })
-
-        st.subheader("Your Genetic Findings")
-
-        if matched:
-            st.write("We found the following variants associated with known genetic conditions:")
-            st.table(matched)
-        else:
-            st.write("No matching variants were found based on the stored panel of genetic markers.")
