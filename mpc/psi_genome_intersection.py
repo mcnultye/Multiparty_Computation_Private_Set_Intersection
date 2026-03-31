@@ -42,7 +42,7 @@ async def main():
     intersection_size_sec = sum(products)
 
     intersection_size = await mpc.output(intersection_size_sec)
-    print("Secure PSI-cardinality (|S_A ∩ S_B|):", intersection_size)
+    print("Secure PSI-cardinality:", intersection_size)
 
     await mpc.shutdown()
 
