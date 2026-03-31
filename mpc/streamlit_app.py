@@ -84,8 +84,39 @@ if uploaded_file is not None:
 
         st.write("### Step 3 — Secure MPC Result")
         st.code(out0)
+        
+        # Load universe + metadata
+        with open("snp_universe.json") as f:
+            universe = json.load(f)
+        with open("snp_metadata.json") as f:
+            metadata = json.load(f)
 
-        # -----------------------------
+        # Build category groups
+        categories = {}
+        for i, rsid in enumerate(universe):
+            if vector[i] == 1:
+                entry = metadata[rsid]
+                cat = entry["category"]
+                if cat not in categories:
+                    categories[cat] = []
+                categories[cat].append({
+                    "rsID": rsid,
+                    "gene": entry["gene"],
+                    "condition": entry["condition"],
+                    "description": entry["description"]
+                })
+
+        st.subheader("Your Genetic Findings")
+
+        if not categories:
+            st.info("No matching variants were found based on the stored panel.")
+        else:
+            for cat, items in categories.items():
+                st.write(f"### {cat}")
+                st.table(items)
+
+
+       # -----------------------------
         # Show matched variants
         # -----------------------------
         with open("snp_universe.json") as f:
@@ -95,7 +126,7 @@ if uploaded_file is not None:
 
         matched = []
         for i, rsid in enumerate(universe):
-            if vector[i] == 1:
+            if vector[i] == 1:  # user carries the risk allele
                 matched.append({
                     "rsID": rsid,
                     "gene": metadata[rsid]["gene"],
@@ -103,8 +134,10 @@ if uploaded_file is not None:
                     "description": metadata[rsid]["description"]
                 })
 
-        st.subheader("Matched Pathogenic Variants")
+        st.subheader("Your Genetic Findings")
+
         if matched:
+            st.write("We found the following variants associated with known genetic conditions:")
             st.table(matched)
         else:
-            st.write("No pathogenic variants detected.")
+            st.write("No matching variants were found based on the stored panel of genetic markers.")
