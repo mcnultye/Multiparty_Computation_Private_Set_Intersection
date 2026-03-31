@@ -1,0 +1,219 @@
+{
+  "rs121908755": {
+    "gene": "BRCA1",
+    "category": "Cancer Risk",
+    "condition": "Hereditary breast and ovarian cancer",
+    "description": "Pathogenic BRCA1 variant associated with increased cancer risk.",
+    "risk_allele": "T"
+  },
+  "rs121908757": {
+    "gene": "BRCA2",
+    "category": "Cancer Risk",
+    "condition": "Hereditary breast cancer",
+    "description": "Pathogenic BRCA2 variant associated with increased cancer risk.",
+    "risk_allele": "T"
+  },
+  "rs28934578": {
+    "gene": "TP53",
+    "category": "Cancer Risk",
+    "condition": "Li-Fraumeni syndrome",
+    "description": "A TP53 mutation associated with multiple early-onset cancers.",
+    "risk_allele": "T"
+  },
+  "rs121908744": {
+    "gene": "MLH1",
+    "category": "Cancer Risk",
+    "condition": "Lynch syndrome",
+    "description": "A pathogenic MLH1 variant associated with hereditary colon cancer.",
+    "risk_allele": "T"
+  },
+  "rs121908751": {
+    "gene": "APC",
+    "category": "Cancer Risk",
+    "condition": "Familial adenomatous polyposis",
+    "description": "A pathogenic APC variant associated with colon cancer.",
+    "risk_allele": "A"
+  },
+  "rs121908843": {
+    "gene": "MEN1",
+    "category": "Cancer Risk",
+    "condition": "Multiple endocrine neoplasia type 1",
+    "description": "A rare MEN1 mutation associated with endocrine tumors.",
+    "risk_allele": "G"
+  },
+  "rs121908787": {
+    "gene": "VHL",
+    "category": "Cancer Risk",
+    "condition": "Von Hippel-Lindau disease",
+    "description": "A pathogenic VHL variant associated with tumor susceptibility.",
+    "risk_allele": "C"
+  },
+  "rs121908862": {
+    "gene": "RB1",
+    "category": "Cancer Risk",
+    "condition": "Retinoblastoma",
+    "description": "A rare RB1 mutation associated with childhood eye cancer.",
+    "risk_allele": "T"
+  },
+  "rs80357065": {
+    "gene": "CFTR",
+    "category": "Carrier Status",
+    "condition": "Cystic Fibrosis (carrier)",
+    "description": "A rare CFTR mutation associated with cystic fibrosis.",
+    "risk_allele": "T"
+  },
+  "rs80338939": {
+    "gene": "HEXA",
+    "category": "Carrier Status",
+    "condition": "Tay-Sachs disease (carrier)",
+    "description": "A pathogenic HEXA variant associated with Tay-Sachs disease.",
+    "risk_allele": "T"
+  },
+  "rs121913529": {
+    "gene": "GBA",
+    "category": "Carrier Status",
+    "condition": "Gaucher disease (carrier)",
+    "description": "A rare GBA mutation associated with Gaucher disease.",
+    "risk_allele": "A"
+  },
+  "rs121912617": {
+    "gene": "PAH",
+    "category": "Carrier Status",
+    "condition": "Phenylketonuria (PKU)",
+    "description": "A PAH mutation associated with PKU.",
+    "risk_allele": "A"
+  },
+  "rs121912651": {
+    "gene": "HBB",
+    "category": "Carrier Status",
+    "condition": "Sickle cell trait",
+    "description": "A pathogenic HBB variant associated with sickle cell disease.",
+    "risk_allele": "T"
+  },
+  "rs80338722": {
+    "gene": "HBA2",
+    "category": "Carrier Status",
+    "condition": "Alpha-thalassemia",
+    "description": "A rare HBA2 mutation associated with thalassemia.",
+    "risk_allele": "A"
+  },
+  "rs63750847": {
+    "gene": "LDLR",
+    "category": "Cardiovascular / Metabolic",
+    "condition": "Familial Hypercholesterolemia",
+    "description": "A rare LDLR mutation associated with high LDL cholesterol.",
+    "risk_allele": "A"
+  },
+  "rs9282541": {
+    "gene": "ABCA1",
+    "category": "Cardiovascular / Metabolic",
+    "condition": "Lipid metabolism variant",
+    "description": "A rare ABCA1 variant affecting HDL cholesterol.",
+    "risk_allele": "A"
+  },
+  "rs7412": {
+    "gene": "APOE",
+    "category": "Cardiovascular / Metabolic",
+    "condition": "APOE ε2 allele",
+    "description": "A common APOE variant affecting lipid metabolism.",
+    "risk_allele": "T"
+  },
+  "rs429358": {
+    "gene": "APOE",
+    "category": "Cardiovascular / Metabolic",
+    "condition": "APOE ε4 allele",
+    "description": "A common APOE variant associated with Alzheimer's and heart disease.",
+    "risk_allele": "C"
+  },
+  "rs328": {
+    "gene": "LPL",
+    "category": "Cardiovascular / Metabolic",
+    "condition": "Hypertriglyceridemia",
+    "description": "A common LPL variant affecting triglyceride levels.",
+    "risk_allele": "G"
+  },
+  "rs7903146": {
+    "gene": "TCF7L2",
+    "category": "Common Disease Risk",
+    "condition": "Type 2 Diabetes",
+    "description": "One of the strongest common genetic risk factors for T2D.",
+    "risk_allele": "T"
+  },
+  "rs9939609": {
+    "gene": "FTO",
+    "category": "Common Disease Risk",
+    "condition": "Obesity",
+    "description": "A common FTO variant associated with increased BMI.",
+    "risk_allele": "A"
+  },
+  "rs1801133": {
+    "gene": "MTHFR",
+    "category": "Common Disease Risk",
+    "condition": "Folate metabolism",
+    "description": "A common MTHFR variant affecting folate processing.",
+    "risk_allele": "T"
+  },
+  "rs13266634": {
+    "gene": "SLC30A8",
+    "category": "Common Disease Risk",
+    "condition": "Type 2 Diabetes",
+    "description": "A common SLC30A8 variant associated with T2D.",
+    "risk_allele": "C"
+  },
+  "rs5219": {
+    "gene": "KCNJ11",
+    "category": "Common Disease Risk",
+    "condition": "Type 2 Diabetes",
+    "description": "A common KCNJ11 variant associated with T2D.",
+    "risk_allele": "T"
+  },
+  "rs4244285": {
+    "gene": "CYP2C19",
+    "category": "Pharmacogenomics",
+    "condition": "Clopidogrel metabolism",
+    "description": "Poor metabolizer allele affecting antiplatelet therapy.",
+    "risk_allele": "A"
+  },
+  "rs4986893": {
+    "gene": "CYP2C19",
+    "category": "Pharmacogenomics",
+    "condition": "Clopidogrel metabolism",
+    "description": "Another CYP2C19 loss-of-function allele.",
+    "risk_allele": "A"
+  },
+  "rs1065852": {
+    "gene": "CYP2D6",
+    "category": "Pharmacogenomics",
+    "condition": "Drug metabolism",
+    "description": "A CYP2D6 variant affecting metabolism of many medications.",
+    "risk_allele": "A"
+  },
+  "rs3892097": {
+    "gene": "CYP2D6",
+    "category": "Pharmacogenomics",
+    "condition": "Drug metabolism",
+    "description": "A CYP2D6 non-functional allele.",
+    "risk_allele": "A"
+  },
+  "rs4149056": {
+    "gene": "SLCO1B1",
+    "category": "Pharmacogenomics",
+    "condition": "Statin-induced myopathy",
+    "description": "A variant associated with increased statin side effects.",
+    "risk_allele": "C"
+  },
+  "rs9923231": {
+    "gene": "VKORC1",
+    "category": "Pharmacogenomics",
+    "condition": "Warfarin sensitivity",
+    "description": "A VKORC1 variant affecting warfarin dose requirements.",
+    "risk_allele": "T"
+  },
+  "rs11591147": {
+    "gene": "PCSK9",
+    "category": "Cardiovascular / Metabolic",
+    "condition": "LDL cholesterol / cardiovascular risk",
+    "description": "A PCSK9 variant associated with lower LDL cholesterol and reduced heart disease risk.",
+    "risk_allele": "T"
+  }
+}
