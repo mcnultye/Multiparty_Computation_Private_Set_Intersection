@@ -114,14 +114,14 @@
   "rs7412": {
     "gene": "APOE",
     "category": "Cardiovascular / Metabolic",
-    "condition": "APOE ε2 allele",
+    "condition": "APOE E2 allele",
     "description": "A common APOE variant affecting lipid metabolism.",
     "risk_allele": "T"
   },
   "rs429358": {
     "gene": "APOE",
     "category": "Cardiovascular / Metabolic",
-    "condition": "APOE ε4 allele",
+    "condition": "APOE E4 allele",
     "description": "A common APOE variant associated with Alzheimer's and heart disease.",
     "risk_allele": "C"
   },
