@@ -151,19 +151,6 @@ if uploaded_file is not None:
             st.subheader("Risk Variants by Category")
             st.bar_chart(df_cat.set_index("Category"))
 
-        # ---------------- Overlap Chart ----------------
-        st.subheader("User vs Reference Panel Overlap")
-
-        overlap_df = pd.DataFrame({
-            "Type": ["User Only", "Shared", "Reference Only"],
-            "Count": [
-                max(risk_variants - intersection_size, 0),
-                intersection_size,
-                max(len(vector) - risk_variants, 0)
-            ]
-        })
-
-        st.bar_chart(overlap_df.set_index("Type"))
 
     # =====================================================
     # TAB 2 — AGE COMPARISON (WITH DROPDOWN)
