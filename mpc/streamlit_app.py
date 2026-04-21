@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import os
 import json
+import pandas as pd
 
 st.title("Secure Genomic PSI — Genetic Variant Screening")
 
@@ -119,3 +120,30 @@ if uploaded_file is not None:
             for cat, items in categories.items():
                 st.write(f"### {cat}")
                 st.table(items)
+                
+        
+        st.subheader("Summary Overview")
+
+        total_variants = len(universe)
+        risk_variants = sum(vector)
+
+        col1, col2 = st.columns(2)
+        col1.metric("Total Variants Screened", total_variants)
+        col2.metric("Risk Variants Found", risk_variants)
+        
+        # Count variants per category
+        category_counts = {cat: len(items) for cat, items in categories.items()}
+
+        if category_counts:
+            df_cat = pd.DataFrame({
+                "Category": list(category_counts.keys()),
+                "Count": list(category_counts.values())
+            })
+
+            st.subheader("Risk Variants by Category")
+
+            st.bar_chart(df_cat.set_index("Category"))
+            
+            
+        
+       
