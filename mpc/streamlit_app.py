@@ -9,9 +9,13 @@ import re
 st.title("Secure Genomic PSI — Genetic Variant Screening")
 
 # ---------------------------------------------------------
-# 1. Convert 23andMe file → risk-aware vector
+# Convert 23andMe file → binary risk vector
 # ---------------------------------------------------------
-def convert_23andme_to_vector(raw_bytes, universe_path="snp_universe.json", metadata_path="snp_metadata.json"):
+def convert_23andme_to_vector(
+    raw_bytes,
+    universe_path="snp_universe.json",
+    metadata_path="snp_metadata.json"
+):
     with open(universe_path) as f:
         universe = json.load(f)
 
@@ -21,17 +25,23 @@ def convert_23andme_to_vector(raw_bytes, universe_path="snp_universe.json", meta
     text = raw_bytes.decode("utf-8", errors="ignore")
 
     user_snps = {}
+
     for line in text.splitlines():
         if line.startswith("#"):
             continue
+
         parts = line.strip().split()
+
         if len(parts) != 4:
             continue
+
         rsid, chrom, pos, genotype = parts
         user_snps[rsid] = genotype
 
     vector = []
+
     for rsid in universe:
+
         if rsid not in user_snps:
             vector.append(0)
             continue
@@ -45,190 +55,320 @@ def convert_23andme_to_vector(raw_bytes, universe_path="snp_universe.json", meta
 
 
 # ---------------------------------------------------------
-# UI Upload
+# Upload Section
 # ---------------------------------------------------------
 uploaded_file = st.file_uploader(
     "Upload your raw 23andMe genotype file (.txt)",
     type=["txt"]
 )
 
+# ---------------------------------------------------------
+# ONLY RUN EVERYTHING AFTER FILE UPLOAD
+# ---------------------------------------------------------
 if uploaded_file is not None:
+
+    # -----------------------------------------------------
+    # Convert uploaded genome to vector
+    # -----------------------------------------------------
     raw_bytes = uploaded_file.read()
+
     vector = convert_23andme_to_vector(raw_bytes)
 
-    # Reference files
-    age_reference_map = {
-        "18-30": "18_30_reference.json",
-        "30-50": "30_50_reference.json",
-        "50+": "50plus_reference.json"
+    # -----------------------------------------------------
+    # Create temporary vector file
+    # -----------------------------------------------------
+    with tempfile.TemporaryDirectory() as tmpdir:
+
+        labA_path = os.path.join(tmpdir, "labA.json")
+
+        with open(labA_path, "w") as f:
+            json.dump(vector, f)
+
+        # -------------------------------------------------
+        # Main secure PSI comparison
+        # -------------------------------------------------
+        labB_path = "labB.json"
+
+        # Party 1
+        p1 = subprocess.Popen(
+            [
+                "py",
+                "-3.11",
+                "psi_genome_intersection.py",
+                f"--labA={labA_path}",
+                f"--labB={labB_path}",
+                "-M",
+                "2",
+                "-I",
+                "1"
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        # Party 0
+        p0 = subprocess.Popen(
+            [
+                "py",
+                "-3.11",
+                "psi_genome_intersection.py",
+                f"--labA={labA_path}",
+                f"--labB={labB_path}",
+                "-M",
+                "2",
+                "-I",
+                "0"
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        out0, err0 = p0.communicate()
+
+        # -------------------------------------------------
+        # Extract secure intersection result
+        # -------------------------------------------------
+        match = re.search(
+            r"Secure PSI-cardinality:\s*(\d+)",
+            out0
+        )
+
+        intersection_size = int(match.group(1)) if match else 0
+
+    # -----------------------------------------------------
+    # Success Message
+    # -----------------------------------------------------
+    st.success("Secure computation completed successfully.")
+
+    # -----------------------------------------------------
+    # Load SNP metadata
+    # -----------------------------------------------------
+    with open("snp_universe.json") as f:
+        universe = json.load(f)
+
+    with open("snp_metadata.json") as f:
+        metadata = json.load(f)
+
+    # -----------------------------------------------------
+    # Build findings categories
+    # -----------------------------------------------------
+    categories = {}
+
+    for i, rsid in enumerate(universe):
+
+        if vector[i] == 1:
+
+            entry = metadata[rsid]
+            cat = entry["category"]
+
+            if cat not in categories:
+                categories[cat] = []
+
+            categories[cat].append({
+                "rsID": rsid,
+                "gene": entry["gene"],
+                "condition": entry["condition"],
+                "description": entry["description"]
+            })
+
+    # -----------------------------------------------------
+    # Findings Table
+    # -----------------------------------------------------
+    st.subheader("Your Genetic Findings")
+
+    if not categories:
+        st.info("No matching variants were found.")
+
+    else:
+        for cat, items in categories.items():
+
+            st.write(f"### {cat}")
+
+            st.dataframe(
+                pd.DataFrame(items),
+                use_container_width=True
+            )
+
+    # -----------------------------------------------------
+    # Summary Metrics
+    # -----------------------------------------------------
+    st.subheader("Summary Overview")
+
+    total_variants = len(universe)
+    risk_variants = sum(vector)
+
+    col1, col2 = st.columns(2)
+
+    col1.metric(
+        "Total Variants Screened",
+        total_variants
+    )
+
+    col2.metric(
+        "Risk Variants Found",
+        risk_variants
+    )
+
+    # -----------------------------------------------------
+    # Category Chart
+    # -----------------------------------------------------
+    category_counts = {
+        cat: len(items)
+        for cat, items in categories.items()
     }
 
-    # Tabs
-    tab1, tab2 = st.tabs(["Your Results", "Age Comparison"])
+    if category_counts:
 
-    # =====================================================
-    # TAB 1 — ORIGINAL RESULTS
-    # =====================================================
-    with tab1:
+        df_cat = pd.DataFrame({
+            "Category": list(category_counts.keys()),
+            "Count": list(category_counts.values())
+        })
+
+        st.subheader("Risk Variants by Category")
+
+        st.bar_chart(
+            df_cat.set_index("Category")
+        )
+
+    # -----------------------------------------------------
+    # Population Comparison Section
+    # -----------------------------------------------------
+    st.subheader("Population Comparison")
+
+    st.write(
+        "Securely compare your genomic profile against "
+        "simulated male and female reference groups."
+    )
+
+    gender_reference_map = {
+        "Male": "male_reference.json",
+        "Female": "female_reference.json"
+    }
+
+    comparison_results = {}
+
+    # -----------------------------------------------------
+    # Compare against each group
+    # -----------------------------------------------------
+    for group, ref_path in gender_reference_map.items():
+
+        if not os.path.exists(ref_path):
+            st.warning(f"{group} reference file missing.")
+            continue
+
         with tempfile.TemporaryDirectory() as tmpdir:
-            labA_path = os.path.join(tmpdir, "labA.json")
+
+            labA_path = os.path.join(
+                tmpdir,
+                "labA.json"
+            )
+
             with open(labA_path, "w") as f:
                 json.dump(vector, f)
 
-            labB_path = "labB.json"
-
-            # Run MPC
+            # Party 1
             p1 = subprocess.Popen(
-                ["py", "-3.11", "psi_genome_intersection.py",
-                 f"--labA={labA_path}", f"--labB={labB_path}",
-                 "-M", "2", "-I", "1"],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                [
+                    "py",
+                    "-3.11",
+                    "psi_genome_intersection.py",
+                    f"--labA={labA_path}",
+                    f"--labB={ref_path}",
+                    "-M",
+                    "2",
+                    "-I",
+                    "1"
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
             )
 
+            # Party 0
             p0 = subprocess.Popen(
-                ["py", "-3.11", "psi_genome_intersection.py",
-                 f"--labA={labA_path}", f"--labB={labB_path}",
-                 "-M", "2", "-I", "0"],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                [
+                    "py",
+                    "-3.11",
+                    "psi_genome_intersection.py",
+                    f"--labA={labA_path}",
+                    f"--labB={ref_path}",
+                    "-M",
+                    "2",
+                    "-I",
+                    "0"
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
             )
 
-            out0, _ = p0.communicate()
+            out0, err0 = p0.communicate()
 
-            # Extract intersection
-            match = re.search(r"Secure PSI-cardinality:\s*(\d+)", out0)
-            intersection_size = int(match.group(1)) if match else 0
+            match = re.search(
+                r"Secure PSI-cardinality:\s*(\d+)",
+                out0
+            )
 
-        st.success("Secure computation completed successfully.")
+            overlap = int(match.group(1)) if match else 0
 
-        # Load metadata
-        with open("snp_universe.json") as f:
-            universe = json.load(f)
-        with open("snp_metadata.json") as f:
-            metadata = json.load(f)
+            comparison_results[group] = overlap
 
-        # Build categories
-        categories = {}
-        for i, rsid in enumerate(universe):
-            if vector[i] == 1:
-                entry = metadata[rsid]
-                cat = entry["category"]
-                categories.setdefault(cat, []).append({
-                    "rsID": rsid,
-                    "gene": entry["gene"],
-                    "condition": entry["condition"],
-                    "description": entry["description"]
-                })
+    # -----------------------------------------------------
+    # Population Comparison Chart
+    # -----------------------------------------------------
+    if comparison_results:
 
-        # ---------------- Findings ----------------
-        st.subheader("Your Genetic Findings")
+        df_compare = pd.DataFrame({
+            "Reference Group": list(comparison_results.keys()),
+            "Shared Variants": list(comparison_results.values())
+        })
 
-        if not categories:
-            st.info("No matching variants were found.")
-        else:
-            for cat, items in categories.items():
-                with st.expander(f"{cat} ({len(items)})"):
-                    st.dataframe(pd.DataFrame(items), use_container_width=True)
+        st.subheader("Shared Variant Overlap")
 
-        # ---------------- Summary ----------------
-        st.subheader("Summary Overview")
-
-        total_variants = len(universe)
-        risk_variants = sum(vector)
-
-        col1, col2 = st.columns(2)
-        col1.metric("Total Variants", total_variants)
-        col2.metric("Risk Variants", risk_variants)
-
-        # ---------------- Category Chart ----------------
-        category_counts = {cat: len(items) for cat, items in categories.items()}
-
-        if category_counts:
-            df_cat = pd.DataFrame({
-                "Category": list(category_counts.keys()),
-                "Count": list(category_counts.values())
-            })
-
-            st.subheader("Risk Variants by Category")
-            st.bar_chart(df_cat.set_index("Category"))
-
-
-    # =====================================================
-    # TAB 2 — AGE COMPARISON (WITH DROPDOWN)
-    # =====================================================
-    with tab2:
-        st.subheader("Age-Based Comparison")
-
-        # Dropdown ONLY here
-        age_option = st.selectbox(
-            "Select your age group",
-            ["18-30", "30-50", "50+"]
+        st.bar_chart(
+            df_compare.set_index("Reference Group")
         )
 
-        user_group = age_option
+        # -------------------------------------------------
+        # Similarity %
+        # -------------------------------------------------
+        user_total = sum(vector)
 
-        st.write(f"Comparing your genome to the **{user_group} age group**.")
+        if user_total > 0:
 
-        results = {}
+            similarity = {
+                k: (v / user_total) * 100
+                for k, v in comparison_results.items()
+            }
 
-        for group, ref_path in age_reference_map.items():
-            if not os.path.exists(ref_path):
-                st.warning(f"{group} reference file missing.")
-                continue
+            col1, col2 = st.columns(2)
 
-            with tempfile.TemporaryDirectory() as tmpdir:
-                labA_path = os.path.join(tmpdir, "labA.json")
-                with open(labA_path, "w") as f:
-                    json.dump(vector, f)
+            col1.metric(
+                "Male Similarity",
+                f"{similarity['Male']:.1f}%"
+            )
 
-                p1 = subprocess.Popen(
-                    ["py", "-3.11", "psi_genome_intersection.py",
-                     f"--labA={labA_path}", f"--labB={ref_path}",
-                     "-M", "2", "-I", "1"],
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-                )
+            col2.metric(
+                "Female Similarity",
+                f"{similarity['Female']:.1f}%"
+            )
 
-                p0 = subprocess.Popen(
-                    ["py", "-3.11", "psi_genome_intersection.py",
-                     f"--labA={labA_path}", f"--labB={ref_path}",
-                     "-M", "2", "-I", "0"],
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-                )
+            best_match = max(
+                similarity,
+                key=similarity.get
+            )
 
-                out0, _ = p0.communicate()
+            st.info(
+                f"Highest overlap detected with the "
+                f"{best_match} reference group."
+            )
 
-                match = re.search(r"Secure PSI-cardinality:\s*(\d+)", out0)
-                intersection_size = int(match.group(1)) if match else 0
-
-                results[group] = intersection_size
-
-        # ---------------- Chart ----------------
-        if results:
-            df = pd.DataFrame({
-                "Age Group": list(results.keys()),
-                "Overlap": list(results.values())
-            })
-
-            st.subheader("Overlap Across Age Groups")
-            st.bar_chart(df.set_index("Age Group"))
-
-            # ---------------- % similarity ----------------
-            user_total = sum(vector)
-
-            if user_total > 0:
-                similarity = {
-                    k: (v / user_total) * 100 for k, v in results.items()
-                }
-
-                best_group = max(similarity, key=similarity.get)
-
-                st.metric(
-                    "Similarity to Selected Age Group",
-                    f"{similarity[user_group]:.1f}%"
-                )
-
-                if best_group == user_group:
-                    st.success("Your genetic profile aligns most with this age group.")
-                else:
-                    st.warning(f"You align more with the {best_group} group.")
-        else:
-            st.info("No reference data available.")
+    # -----------------------------------------------------
+    # Proof-of-concept disclaimer
+    # -----------------------------------------------------
+    st.caption(
+        "Reference groups shown are simulated genomic "
+        "datasets for proof-of-concept purposes."
+    )
